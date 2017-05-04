@@ -1,7 +1,16 @@
 package edu.umass.cs.selectcapacity;
 
 
+import java.io.IOException;
+import java.util.Random;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import edu.umass.cs.gnsclient.client.GNSCommand;
+import edu.umass.cs.gnsclient.client.util.GuidEntry;
+import edu.umass.cs.gnsclient.client.util.GuidUtils;
+import edu.umass.cs.gnscommon.exceptions.client.ClientException;
 
 /**
  * This class creates GUIDs for the first time in the GNS based CNS
@@ -11,22 +20,65 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 {
 	// different random generator for each variable, as using one for all of them
 	// doesn't give uniform properties.
-	//private final Random initRand;
+	private final boolean performValueUpdate;
+	private final Random initRand;
 	
-	public UserInitializationClass()
+	public UserInitializationClass(boolean performValueUpdate)
 	{
 		super( SearchAndUpdateDriver.INSERT_LOSS_TOLERANCE );
-		//initRand = new Random(SearchAndUpdateDriver.myID*100);
+		this.performValueUpdate = performValueUpdate;
+		initRand = new Random(SearchAndUpdateDriver.myID*100);
 	}
 	
+
 	private void sendAInitMessage(int guidNum) throws Exception
 	{
 		String alias = SearchAndUpdateDriver.ALIAS_PREFIX+
 						SearchAndUpdateDriver.myID+guidNum+
 						SearchAndUpdateDriver.ALIAS_SUFFIX;
 		
-		SearchAndUpdateDriver.gnsClient.execute
+		if(!performValueUpdate)
+		{
+			SearchAndUpdateDriver.gnsClient.execute
 				(GNSCommand.createAccount(alias), new InitCallBack(this));
+		}
+		else
+		{
+			initializeAttrValues( alias );
+		}
+	}
+	
+	private void initializeAttrValues( String alias )
+	{	
+		GuidEntry guidEntry = GuidUtils.getGUIDKeys(alias);
+		
+		JSONObject attrValJSON = new JSONObject();
+		for(int i=0; i<SearchAndUpdateDriver.numAttrs; i++)
+		{
+			String attrName = SearchAndUpdateDriver.ATTR_PREFIX+i;
+			double randVal = SearchAndUpdateDriver.ATTR_MIN 
+					+initRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX 
+							- SearchAndUpdateDriver.ATTR_MIN);
+			
+			try
+			{
+				attrValJSON.put(attrName, randVal);
+			} 
+			catch (JSONException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		try 
+		{
+			SearchAndUpdateDriver.gnsClient.execute
+					(GNSCommand.update(guidEntry, attrValJSON), new UpdateCallBack(this));
+		}
+		catch (ClientException | IOException e) 
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	public void initializaRateControlledRequestSender() throws Exception
@@ -88,14 +140,15 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		long endTime = System.currentTimeMillis();
 		double timeInSec = ((double)(endTime - expStartTime))/1000.0;
 		double sendingRate = (numSent * 1.0)/(timeInSec);
-		System.out.println("UserInit eventual sending rate "+sendingRate);
+		System.out.println("UserInit performValueUpdate "+this.performValueUpdate+" eventual sending rate "+sendingRate);
 		
 		waitForFinish();
 		
 		double endTimeReplyRecvd = System.currentTimeMillis();
 		double sysThrput= (numRecvd * 1000.0)/(endTimeReplyRecvd - expStartTime);
 		
-		System.out.println("UserInit result:Goodput "+sysThrput);	
+		System.out.println("UserInit performValueUpdate "+performValueUpdate
+							+" result:Goodput "+sysThrput);	
 	}
 	
 	@Override

@@ -60,7 +60,6 @@ public class SearchAndUpdateDriver
 	
 	public static double predicateLength						= 0.5;
 	
-	
 	public static void main( String[] args ) throws Exception
 	{
 		myID 			  = Integer.parseInt(args[0]);
@@ -87,9 +86,17 @@ public class SearchAndUpdateDriver
 		if( userInitEnable )
 		{
 			long start 	= System.currentTimeMillis();
-			new UserInitializationClass().initializaRateControlledRequestSender();
+			// just guid creation
+			new UserInitializationClass(false).initializaRateControlledRequestSender();
 			long end 	= System.currentTimeMillis();
-			System.out.println(numUsers+" initialization complete "+(end-start));
+			System.out.println(numUsers+" initialization guid creation complete "+(end-start));
+			
+			
+			start 	= System.currentTimeMillis();
+			// just guid creation
+			new UserInitializationClass(true).initializaRateControlledRequestSender();
+			end 	= System.currentTimeMillis();
+			System.out.println(numUsers+" initialization value update complete "+(end-start));
 		}
 		
 		BothSearchAndUpdate bothSearchAndUpdate = new BothSearchAndUpdate();
@@ -109,31 +116,4 @@ public class SearchAndUpdateDriver
 		
 		System.exit(0);
 	}
-	
-	/*public static String getSHA1(String stringToHash)
-	{
-		MessageDigest md = null;
-		try
-		{
-			md = MessageDigest.getInstance("SHA-256");
-		} 
-		catch (NoSuchAlgorithmException e)
-		{
-			e.printStackTrace();
-		}
-		
-		md.update(stringToHash.getBytes());
-		
-		byte byteData[] = md.digest();
-		
-		//convert the byte to hex format method 1
-		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < byteData.length; i++) 
-		{
-			sb.append(Integer.toString
-					((byteData[i] & 0xff) + 0x100, 16).substring(1));
-		}
-		String returnGUID = sb.toString();
-		return returnGUID.substring(0, 40);
-	}*/
 }
