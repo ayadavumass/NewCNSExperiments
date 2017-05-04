@@ -16,13 +16,13 @@ import edu.umass.cs.gnsclient.client.GNSClient;
 public class SearchAndUpdateDriver
 {	
 	// 1% loss tolerance
-	public static final double INSERT_LOSS_TOLERANCE			= 0.5;
+	public static final double INSERT_LOSS_TOLERANCE			= 0.0;
 	
 	// 1% loss tolerance
-	public static final double UPD_LOSS_TOLERANCE				= 0.5;
+	public static final double UPD_LOSS_TOLERANCE				= 0.0;
 	
 	// 1% loss tolerance
-	public static final double SEARCH_LOSS_TOLERANCE			= 0.5;
+	public static final double SEARCH_LOSS_TOLERANCE			= 0.0;
 	
 	// after sending all the requests it waits for 100 seconds 
 	public static final int WAIT_TIME							= 100000;

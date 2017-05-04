@@ -11,6 +11,7 @@ import edu.umass.cs.gnsclient.client.GNSCommand;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
 import edu.umass.cs.gnsclient.client.util.GuidUtils;
 import edu.umass.cs.gnscommon.exceptions.client.ClientException;
+import edu.umass.cs.gnscommon.packets.CommandPacket;
 
 /**
  * This class creates GUIDs for the first time in the GNS based CNS
@@ -72,8 +73,12 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		
 		try 
 		{
-			SearchAndUpdateDriver.gnsClient.execute
-					(GNSCommand.update(guidEntry, attrValJSON), new UpdateCallBack(this));
+			//SearchAndUpdateDriver.gnsClient.execute
+			//		(GNSCommand.update(guidEntry, attrValJSON), new UpdateCallBack(this));
+			UpdateCallBack updcb = new UpdateCallBack(this);
+			CommandPacket cmdp = SearchAndUpdateDriver.gnsClient.execute
+			(GNSCommand.update(guidEntry, attrValJSON) );
+			updcb.processResponse(cmdp);
 		}
 		catch (ClientException | IOException e) 
 		{
