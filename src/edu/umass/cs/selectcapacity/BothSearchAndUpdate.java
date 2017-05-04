@@ -279,6 +279,15 @@ public class BothSearchAndUpdate extends
 			this.numUpdatesRecvd++;
 			
 			this.sumUpdateLatency = this.sumUpdateLatency + timeTaken;
+			
+			if((numRecvd % 100) == 0)
+			{
+				System.out.println("Update recvd current stats total sent="+numSent
+						+" total recvd="+numRecvd
+						+" update recvd="+this.numUpdatesRecvd
+						+" search recvd="+this.numSearchesRecvd);
+			}
+			
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
 			{
 				waitLock.notify();
@@ -294,6 +303,14 @@ public class BothSearchAndUpdate extends
 			numRecvd++;
 			this.numSearchesRecvd++;
 			sumResultSize = sumResultSize + resultSize;
+			
+			if((numRecvd % 100) == 0)
+			{
+				System.out.println("Search recvd current stats total sent="+numSent
+						+" total recvd="+numRecvd
+						+" update recvd="+this.numUpdatesRecvd
+						+" search recvd="+this.numSearchesRecvd);
+			}
 			
 			this.sumSearchLatency = this.sumSearchLatency + timeTaken;
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
