@@ -1,0 +1,60 @@
+<?xml version="1.0" ?>
+<project name="NewCNSExp" basedir=".">
+
+  <!-- Directories -->
+  <property name="build.dir" value="build" />
+  <property name="src.dir" value="src" />
+  <property name="lib.dir" value="libs" />
+  <property name="release.dir" value="release" />
+
+  <!-- Properties -->
+  <property file="build.properties" />
+
+  <!-- Classpath definitions -->
+  <path id="classpath.base">
+    <fileset dir="${lib.dir}" includes="gnsclient-1.19.13.jar" />
+  </path>
+
+  <!-- Init -->
+  <target name="init">
+    <mkdir dir="${build.dir}" />
+    <mkdir dir="${release.dir}" />
+  </target>
+
+  <!-- Clean -->
+  <target name="clean">
+    <delete dir="${build.dir}" />
+    <delete dir="${release.dir}" failonerror="false" />
+  </target>
+
+  <!-- Compile -->
+  <target name="compile" depends="init" description="Compiles the code">
+
+    <!-- Compile the lib and tools but not the tests -->
+    <javac srcdir="${src.dir}"
+           destdir="${build.dir}"
+           debug="on">
+      <classpath refid="classpath.base" />
+    </javac>
+  </target>
+
+<!-- Release -->
+<target name="jar"
+        depends="clean,compile"
+        description="Builds the context Jar">
+<jar jarfile="${release.dir}/ExperimentClient.jar">
+  <fileset dir="${build.dir}/">
+  </fileset>
+  <zipgroupfileset dir="${lib.dir}/" includes="gnsclient-1.19.13.jar"/>
+  <manifest>
+    <attribute name="Built-By" value="Aditya Yadav" />
+    <!-- Information about the program itself -->
+    <attribute name="Implementation-Vendor"
+               value="University of Massachusetts" />
+    <attribute name="Implementation-Title" value="context" />
+    <attribute name="Implementation-Version" value="${VERSION}-${RELEASE}" />
+  </manifest>
+</jar>
+</target>
+
+</project>
