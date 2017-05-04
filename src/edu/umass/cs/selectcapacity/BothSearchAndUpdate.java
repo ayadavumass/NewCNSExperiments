@@ -136,7 +136,7 @@ public class BothSearchAndUpdate extends
 	private void sendQueryMessageWithSmallRanges(long reqIdNum)
 	{
 		//FIXME: need to change the search query format to mongo format
-		String searchQuery = "";
+		//String query = "$and:[(\"~a0\":($gt:0, $lt:100)),(\"~a1\":($gt:0, $lt:100))]";
 		
 		HashMap<String, Boolean> distinctAttrMap 
 			= pickDistinctAttrs( SearchAndUpdateDriver.numAttrsInQuery, 
@@ -144,6 +144,7 @@ public class BothSearchAndUpdate extends
 		
 		Iterator<String> attrIter = distinctAttrMap.keySet().iterator();
 		
+		String searchQuery = "$and:[";
 		while( attrIter.hasNext() )
 		{
 			String attrName = attrIter.next();
@@ -156,37 +157,33 @@ public class BothSearchAndUpdate extends
 				= (SearchAndUpdateDriver.predicateLength
 						*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN)) ;
 			
-//			double attrMax = Math.min(attrMin + predLength, 
-//									SearchAndUpdateDriver.ATTR_MAX);
-			
 			double attrMax = attrMin + predLength;
 			
-			//		double latitudeMax = latitudeMin 
-			//					+WeatherAndMobilityBoth.percDomainQueried*(WeatherAndMobilityBoth.LATITUDE_MAX - WeatherAndMobilityBoth.LATITUDE_MIN);
-			// making it curcular
 			if( attrMax > SearchAndUpdateDriver.ATTR_MAX )
 			{
-				double diff = attrMax - SearchAndUpdateDriver.ATTR_MAX;
-				attrMax = SearchAndUpdateDriver.ATTR_MIN + diff;
+				attrMax = SearchAndUpdateDriver.ATTR_MAX;
 			}
+			String predicate = "(\"~"+attrName+"\":($gt:"+attrMin+", $lt:"+attrMax+"))";
+			
 			// last so no AND
 			if( !attrIter.hasNext() )
 			{
-				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
-						+" <= "+attrMax;
+				searchQuery = searchQuery +predicate+"]";
 			}
 			else
 			{
-				searchQuery = searchQuery + " "+attrName+" >= "+attrMin+" AND "+attrName
-					+" <= "+attrMax+" AND ";
+				searchQuery = searchQuery +predicate+",";
 			}
 		}
 		
-		//ExperimentSearchReply searchRep 
-		//		= new ExperimentSearchReply( reqIdNum );
-		
-		//SearchAndUpdateDriver.csClient.sendSearchQueryWithCallBack
-		//	( searchQuery, SearchAndUpdateDriver.queryExpiryTime, searchRep, this.getCallBack() );
+		try 
+		{
+			SearchAndUpdateDriver.gnsClient.execute
+				(GNSCommand.selectQuery(searchQuery), new SearchCallBack(this));
+		} catch (ClientException | IOException e) 
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	
