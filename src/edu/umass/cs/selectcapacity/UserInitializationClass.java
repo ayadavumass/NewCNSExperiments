@@ -73,12 +73,12 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		
 		try 
 		{
-			//SearchAndUpdateDriver.gnsClient.execute
-			//		(GNSCommand.update(guidEntry, attrValJSON), new UpdateCallBack(this));
-			UpdateCallBack updcb = new UpdateCallBack(this);
-			CommandPacket cmdp = SearchAndUpdateDriver.gnsClient.execute
-			(GNSCommand.update(guidEntry, attrValJSON) );
-			updcb.processResponse(cmdp);
+			SearchAndUpdateDriver.gnsClient.execute
+					(GNSCommand.update(guidEntry, attrValJSON), new UpdateCallBack(this));
+//			UpdateCallBack updcb = new UpdateCallBack(this);
+//			CommandPacket cmdp = SearchAndUpdateDriver.gnsClient.execute
+//			(GNSCommand.update(guidEntry, attrValJSON) );
+//			updcb.processResponse(cmdp);
 		}
 		catch (ClientException | IOException e) 
 		{
