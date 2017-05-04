@@ -79,6 +79,8 @@ public class SearchAndUpdateDriver
 		//guidPrefix = guidPrefix+myID;
 		
 		gnsClient  = new GNSClient();
+		gnsClient = gnsClient.setForcedTimeout(5000);
+		gnsClient = gnsClient.setNumRetriesUponTimeout(5);
 		
 		taskES = Executors.newFixedThreadPool(1);
 		
