@@ -104,7 +104,8 @@ public class SearchAndUpdateDriver
 		System.out.println("avgUpdateLatency "+avgUpdateLatency
 					+" avgSearchLatency "+avgSearchLatency
 					+" numUpdates "+numUpdates
-					+" numSearches "+numSearches);
+					+" numSearches "+numSearches
+					+" avg predicate length "+bothSearchAndUpdate.getAvgPredLength());
 		
 		System.exit(0);
 	}

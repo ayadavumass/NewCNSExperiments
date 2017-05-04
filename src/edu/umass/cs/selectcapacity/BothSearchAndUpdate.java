@@ -38,6 +38,9 @@ public class BothSearchAndUpdate extends
 	// the beginning.
 	//private long numberSearchesSent		= 0;
 	
+	private double sumPredLength			= 0;
+	private long numEntries					= 0;
+	
 	public BothSearchAndUpdate()
 	{
 		super( SearchAndUpdateDriver.UPD_LOSS_TOLERANCE );
@@ -135,7 +138,6 @@ public class BothSearchAndUpdate extends
 	
 	private void sendQueryMessageWithSmallRanges(long reqIdNum)
 	{
-		//FIXME: need to change the search query format to mongo format
 		//String query = "$and:[(\"~a0\":($gt:0, $lt:100)),(\"~a1\":($gt:0, $lt:100))]";
 		
 		HashMap<String, Boolean> distinctAttrMap 
@@ -164,8 +166,13 @@ public class BothSearchAndUpdate extends
 				attrMax = SearchAndUpdateDriver.ATTR_MAX;
 			}
 			
-			attrMin = SearchAndUpdateDriver.ATTR_MIN;
-			attrMax = SearchAndUpdateDriver.ATTR_MAX;
+			//attrMin = SearchAndUpdateDriver.ATTR_MIN;
+			//attrMax = SearchAndUpdateDriver.ATTR_MAX;
+			
+			sumPredLength = sumPredLength + 
+					((attrMax-attrMin)/(SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN));
+			this.numEntries = this.numEntries + 1;
+			
 			
 			String predicate = "(\"~"+attrName+"\":($gt:"+attrMin+", $lt:"+attrMax+"))";
 			
@@ -267,6 +274,11 @@ public class BothSearchAndUpdate extends
 	public long getNumSearchesRecvd()
 	{
 		return this.numSearchesRecvd;
+	}
+	
+	public double getAvgPredLength()
+	{
+		return this.sumPredLength/this.numEntries;
 	}
 	
 	
