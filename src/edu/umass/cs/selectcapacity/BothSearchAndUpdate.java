@@ -163,6 +163,10 @@ public class BothSearchAndUpdate extends
 			{
 				attrMax = SearchAndUpdateDriver.ATTR_MAX;
 			}
+			
+			attrMin = SearchAndUpdateDriver.ATTR_MIN;
+			attrMax = SearchAndUpdateDriver.ATTR_MAX;
+			
 			String predicate = "(\"~"+attrName+"\":($gt:"+attrMin+", $lt:"+attrMax+"))";
 			
 			// last so no AND
