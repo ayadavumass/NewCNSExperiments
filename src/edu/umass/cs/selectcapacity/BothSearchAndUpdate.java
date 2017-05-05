@@ -316,7 +316,7 @@ public class BothSearchAndUpdate extends
 			this.numSearchesRecvd++;
 			sumResultSize = sumResultSize + resultSize;
 			
-			if((numRecvd % 100) == 0)
+			//if((numRecvd % 100) == 0)
 			{
 				System.out.println("Search recvd current stats total sent="+numSent
 						+" total recvd="+numRecvd
