@@ -79,7 +79,7 @@ public class SearchAndUpdateDriver
 		getEnabled		  = Boolean.getBoolean(args[10]);
 		
 		
-		System.out.println("Search and update and get client started ");
+		System.out.println("Search and update and get client started getEnabled "+getEnabled);
 		//guidPrefix = guidPrefix+myID;
 		
 		gnsClient  = new GNSClient();
