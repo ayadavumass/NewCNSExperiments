@@ -60,6 +60,10 @@ public class SearchAndUpdateDriver
 	
 	public static double predicateLength						= 0.5;
 	
+	// if set to true, the get requests are sent 
+	// instead of search.
+	public static boolean getEnabled							= false;
+	
 	public static void main( String[] args ) throws Exception
 	{
 		myID 			  = Integer.parseInt(args[0]);
@@ -72,6 +76,7 @@ public class SearchAndUpdateDriver
 		numAttrsInQuery   = Integer.parseInt(args[7]);
 		predicateLength   = Double.parseDouble(args[8]);
 		experimentTime    = Long.parseLong(args[9]);
+		getEnabled		  = Boolean.getBoolean(args[10]);
 		
 		
 		System.out.println("Search and update client started ");
@@ -109,10 +114,11 @@ public class SearchAndUpdateDriver
 		long numUpdates = bothSearchAndUpdate.getNumUpdatesRecvd();
 		long numSearches = bothSearchAndUpdate.getNumSearchesRecvd();
 		System.out.println("avgUpdateLatency "+avgUpdateLatency
-					+" avgSearchLatency "+avgSearchLatency
-					+" numUpdates "+numUpdates
-					+" numSearches "+numSearches
-					+" avg predicate length "+bothSearchAndUpdate.getAvgPredLength());
+					+ " avgSearchLatency "+avgSearchLatency
+					+ " numUpdates "+numUpdates
+					+ " numSearches "+numSearches
+					+ " avg predicate length "
+					+ bothSearchAndUpdate.getAvgPredLength());
 		
 		System.exit(0);
 	}

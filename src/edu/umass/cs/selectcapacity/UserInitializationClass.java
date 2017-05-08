@@ -11,7 +11,7 @@ import edu.umass.cs.gnsclient.client.GNSCommand;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
 import edu.umass.cs.gnsclient.client.util.GuidUtils;
 import edu.umass.cs.gnscommon.exceptions.client.ClientException;
-import edu.umass.cs.gnscommon.packets.CommandPacket;
+
 
 /**
  * This class creates GUIDs for the first time in the GNS based CNS
@@ -172,7 +172,13 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 	}
 
 	@Override
-	public void incrementSearchNumRecvd(int resultSize, long timeTaken) 
+	public void incrementSearchNumRecvd(int resultInfo, long timeTaken) 
 	{
+	}
+
+
+	@Override
+	public void incrementGetNumRecvd(JSONObject resultJSON, long timeTaken) 
+	{	
 	}
 }

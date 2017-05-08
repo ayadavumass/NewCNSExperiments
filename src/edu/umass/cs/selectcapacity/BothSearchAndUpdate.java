@@ -21,7 +21,7 @@ public class BothSearchAndUpdate extends
 	private Random searchQueryRand;
 	private final Random updateRand;
 	
-	private double currUserGuidNum   		= 0;
+	//private double currUserGuidNum   		= 0;
 	
 	private long sumResultSize				= 0;
 	
@@ -114,14 +114,22 @@ public class BothSearchAndUpdate extends
 		
 		System.out.println("Both result:Goodput "+sysThrput+" average resultsize "
 										+avgResultSize);
-	}	
+	}
+	
 	
 	private void sendRequest( long reqIdNum )
 	{
 		// send update
 		if( generalRand.nextDouble() < SearchAndUpdateDriver.rhoValue )
 		{
-			sendQueryMessageWithSmallRanges(reqIdNum);
+			if(SearchAndUpdateDriver.getEnabled)
+			{
+				sendGet(reqIdNum);
+			}
+			else
+			{
+				sendQueryMessageWithSmallRanges(reqIdNum);
+			}
 		}
 		else
 		{
@@ -129,11 +137,17 @@ public class BothSearchAndUpdate extends
 		}
 	}
 	
+	
 	private void sendUpdate(long reqIdNum)
 	{
+		int currUserGuidNum = updateRand.nextInt((int)SearchAndUpdateDriver.numUsers);
 		sendUpdateMessage((int)currUserGuidNum, reqIdNum);
-		currUserGuidNum++;
-		currUserGuidNum=((int)currUserGuidNum)%SearchAndUpdateDriver.numUsers;
+	}
+	
+	private void sendGet(long reqIdNum)
+	{
+		int currUserGuidNum = searchQueryRand.nextInt((int)SearchAndUpdateDriver.numUsers);
+		sendGetMessage((int)currUserGuidNum, reqIdNum);
 	}
 	
 	private void sendQueryMessageWithSmallRanges(long reqIdNum)
@@ -221,7 +235,6 @@ public class BothSearchAndUpdate extends
 		return hashMap;
 	}
 	
-	
 	private void sendUpdateMessage( int currUserGuidNum, long reqIdNum )
 	{
 		String alias = SearchAndUpdateDriver.ALIAS_PREFIX+SearchAndUpdateDriver.myID
@@ -255,6 +268,26 @@ public class BothSearchAndUpdate extends
 			e.printStackTrace();
 		}
 	}
+	
+	
+	private void sendGetMessage( int currUserGuidNum, long reqIdNum )
+	{
+		String alias = SearchAndUpdateDriver.ALIAS_PREFIX+SearchAndUpdateDriver.myID
+				+currUserGuidNum+SearchAndUpdateDriver.ALIAS_SUFFIX;
+		
+		GuidEntry guidEntry = GuidUtils.getGUIDKeys(alias);
+		
+		try 
+		{
+			SearchAndUpdateDriver.gnsClient.execute
+					(GNSCommand.read(guidEntry), new GetCallBack(this));
+		} 
+		catch (ClientException | IOException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	
 	public double getAverageUpdateLatency()
 	{
@@ -322,6 +355,32 @@ public class BothSearchAndUpdate extends
 						+" total recvd="+numRecvd
 						+" update recvd="+this.numUpdatesRecvd
 						+" search recvd="+this.numSearchesRecvd);
+			}
+			
+			this.sumSearchLatency = this.sumSearchLatency + timeTaken;
+			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
+			{
+				waitLock.notify();
+			}
+		}
+	}
+
+	@Override
+	public void incrementGetNumRecvd(JSONObject resultJSON, long timeTaken) 
+	{
+		synchronized(waitLock)
+		{
+			numRecvd++;
+			this.numSearchesRecvd++;
+			sumResultSize = sumResultSize + 1;
+			
+			if((numRecvd % 100) == 0)
+			{
+				System.out.println("Get recvd current stats total sent="+numSent
+						+" total recvd="+numRecvd
+						+" update recvd="+this.numUpdatesRecvd
+						+" search recvd="+this.numSearchesRecvd
+						+" resultJSON "+resultJSON);
 			}
 			
 			this.sumSearchLatency = this.sumSearchLatency + timeTaken;

@@ -3,6 +3,8 @@ package edu.umass.cs.selectcapacity;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.json.JSONObject;
+
 
 public abstract class AbstractRequestSendingClass
 {
@@ -117,4 +119,5 @@ public abstract class AbstractRequestSendingClass
 	
 	public abstract void incrementUpdateNumRecvd(String userGUID, long timeTaken);
 	public abstract void incrementSearchNumRecvd(int resultSize, long timeTaken);
+	public abstract void incrementGetNumRecvd(JSONObject resultJSON, long timeTaken);
 }
