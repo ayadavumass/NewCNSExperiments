@@ -75,8 +75,7 @@ public class SearchAndUpdateDriver
 		numAttrs 		  = Integer.parseInt(args[6]);
 		numAttrsInQuery   = Integer.parseInt(args[7]);
 		predicateLength   = Double.parseDouble(args[8]);
-		experimentTime    = Long.parseLong(args[9]);
-		getEnabled		  = Boolean.getBoolean(args[10]);
+		getEnabled		  = Boolean.getBoolean(args[9]);
 		
 		
 		System.out.println("Search and update and get client started getEnabled "+getEnabled);
