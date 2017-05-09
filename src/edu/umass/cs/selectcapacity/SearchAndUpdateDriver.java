@@ -85,7 +85,7 @@ public class SearchAndUpdateDriver
 		gnsClient = gnsClient.setForcedTimeout(5000);
 		gnsClient = gnsClient.setNumRetriesUponTimeout(5);
 		
-		taskES = Executors.newFixedThreadPool(20);
+		taskES = Executors.newFixedThreadPool(10);
 		
 		if( userInitEnable )
 		{
@@ -117,7 +117,9 @@ public class SearchAndUpdateDriver
 					+ " numUpdates "+numUpdates
 					+ " numSearches "+numSearches
 					+ " avg predicate length "
-					+ bothSearchAndUpdate.getAvgPredLength());
+					+ bothSearchAndUpdate.getAvgPredLength()
+					+ " getAvgGNSClientExecTime "
+					+ bothSearchAndUpdate.getAvgGNSClientExecTime());
 		
 		System.exit(0);
 	}

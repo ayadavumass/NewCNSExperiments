@@ -42,6 +42,11 @@ public class BothSearchAndUpdate extends
 	private double sumPredLength			= 0;
 	private long numEntries					= 0;
 	
+	private long sumClientExecTime			= 0;
+	private long numClientExec				= 0;
+	private final Object lock 				= new Object();
+	
+	
 	public BothSearchAndUpdate()
 	{
 		super( SearchAndUpdateDriver.UPD_LOSS_TOLERANCE );
@@ -339,6 +344,11 @@ public class BothSearchAndUpdate extends
 		return this.sumPredLength/this.numEntries;
 	}
 	
+	public double getAvgGNSClientExecTime()
+	{
+		return (this.sumClientExecTime*1.0)/this.numClientExec;
+	}
+	
 	
 	@Override
 	public void incrementUpdateNumRecvd(String userGUID, long timeTaken)
@@ -437,13 +447,17 @@ public class BothSearchAndUpdate extends
 		@Override
 		public void run() 
 		{
+			long start = 0;
+			long end = 0;
 			switch(requestType)
 			{
 				case UPDATE_REQ:
 				{
-					try 
+					try
 					{
+						start = System.currentTimeMillis();
 						SearchAndUpdateDriver.gnsClient.execute(cmd, new UpdateCallBack(thisObj));
+						end = System.currentTimeMillis();
 					} 
 					catch (IOException e) 
 					{
@@ -455,7 +469,9 @@ public class BothSearchAndUpdate extends
 				{
 					try 
 					{
+						start = System.currentTimeMillis();
 						SearchAndUpdateDriver.gnsClient.execute(cmd, new SearchCallBack(thisObj));
+						end = System.currentTimeMillis();
 					} 
 					catch (IOException e) 
 					{
@@ -467,7 +483,9 @@ public class BothSearchAndUpdate extends
 				{
 					try 
 					{
+						start = System.currentTimeMillis();
 						SearchAndUpdateDriver.gnsClient.execute(cmd, new GetCallBack(thisObj));
+						end = System.currentTimeMillis();
 					} 
 					catch (IOException e) 
 					{
@@ -475,6 +493,12 @@ public class BothSearchAndUpdate extends
 					}
 					break;
 				}
+			}
+			
+			synchronized(lock)
+			{
+				sumClientExecTime = sumClientExecTime + (end-start);
+				numClientExec++;
 			}
 		}
 	}
