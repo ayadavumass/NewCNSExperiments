@@ -92,7 +92,13 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 	public void initializaRateControlledRequestSender() throws Exception
 	{	
 		this.startExpTime();
+		
 		double reqsps = SearchAndUpdateDriver.initRate;
+		
+		if(this.performValueUpdate)
+			reqsps = 100;
+		
+		
 		long currTime = 0;
 		
 		// sleep for 100ms
