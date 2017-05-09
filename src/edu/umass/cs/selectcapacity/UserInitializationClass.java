@@ -40,6 +40,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		
 		if(!performValueUpdate)
 		{
+			System.out.println("Creating account GUID "+alias);
 			SearchAndUpdateDriver.gnsClient.execute
 				(GNSCommand.createAccount(alias), new InitCallBack(this));
 		}
@@ -164,8 +165,17 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		synchronized(waitLock)
 		{
 			numRecvd++;
-			System.out.println("UserInit reply recvd "+userGUID+" time taken "+timeTaken+
+			if(!this.performValueUpdate)
+			{
+				System.out.println("Account GUID "+userGUID+" created time taken "+timeTaken+
 					" numSent "+numSent+" numRecvd "+numRecvd);
+			}
+			else
+			{
+				System.out.println("AttrValue initialized for "+userGUID
+						+" time taken "+timeTaken+
+						" numSent "+numSent+" numRecvd "+numRecvd);
+			}
 			if(checkForCompletionWithLossTolerance(numSent, numRecvd))
 			{
 				waitLock.notify();

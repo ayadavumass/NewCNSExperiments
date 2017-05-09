@@ -83,7 +83,9 @@ public class SearchAndUpdateDriver
 		
 		guidEntryArray    = new GuidEntry[(int)numUsers];
 		
-		System.out.println("Search and update and get client started getEnabled "+getEnabled);
+		System.out.println("myID "+myID+" search and update and get client started getEnabled "
+									+getEnabled);
+		
 		//guidPrefix = guidPrefix+myID;
 		
 		gnsClient  = new GNSClient();
