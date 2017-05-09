@@ -92,11 +92,11 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 	public void initializaRateControlledRequestSender() throws Exception
 	{	
 		this.startExpTime();
-		double reqspms = SearchAndUpdateDriver.initRate/1000.0;
+		double reqsps = SearchAndUpdateDriver.initRate;
 		long currTime = 0;
 		
 		// sleep for 100ms
-		double numberShouldBeSentPerSleep = reqspms*100.0;
+		double numberShouldBeSentPerSleep = reqsps;
 		
 		double totalNumUsersSent = 0;
 		
@@ -119,8 +119,8 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 			}
 			currTime = System.currentTimeMillis();
 			
-			double timeElapsed = ((currTime- expStartTime)*1.0);
-			double numberShouldBeSentByNow = timeElapsed*reqspms;
+			double timeElapsed = ((currTime- expStartTime));
+			double numberShouldBeSentByNow = (timeElapsed/1000)*reqsps;
 			double needsToBeSentBeforeSleep = numberShouldBeSentByNow - numSent;
 			if(needsToBeSentBeforeSleep > 0)
 			{
@@ -142,7 +142,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 			{
 				break;
 			}
-			Thread.sleep(100);
+			Thread.sleep(1000);
 		}
 		
 		long endTime = System.currentTimeMillis();
