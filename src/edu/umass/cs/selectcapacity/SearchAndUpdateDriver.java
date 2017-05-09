@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import edu.umass.cs.gnsclient.client.GNSClient;
+import edu.umass.cs.gnsclient.client.util.GuidEntry;
 
 /**
  * This is the driver class to perform the GNS based CNS select and update
@@ -64,6 +65,9 @@ public class SearchAndUpdateDriver
 	// instead of search.
 	public static boolean getEnabled							= false;
 	
+	public static GuidEntry[] guidEntryArray;
+	
+	
 	public static void main( String[] args ) throws Exception
 	{
 		myID 			  = Integer.parseInt(args[0]);
@@ -77,6 +81,7 @@ public class SearchAndUpdateDriver
 		predicateLength   = Double.parseDouble(args[8]);
 		getEnabled		  = Boolean.parseBoolean(args[9]);
 		
+		guidEntryArray    = new GuidEntry[(int)numUsers];
 		
 		System.out.println("Search and update and get client started getEnabled "+getEnabled);
 		//guidPrefix = guidPrefix+myID;
@@ -85,7 +90,7 @@ public class SearchAndUpdateDriver
 		gnsClient = gnsClient.setForcedTimeout(5000);
 		gnsClient = gnsClient.setNumRetriesUponTimeout(5);
 		
-		taskES = Executors.newFixedThreadPool(10);
+		taskES = Executors.newFixedThreadPool(1);
 		
 		if( userInitEnable )
 		{

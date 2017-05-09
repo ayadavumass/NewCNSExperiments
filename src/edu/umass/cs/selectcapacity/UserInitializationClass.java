@@ -45,13 +45,15 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		}
 		else
 		{
-			initializeAttrValues( alias );
+			initializeAttrValues( alias, guidNum );
 		}
 	}
 	
-	private void initializeAttrValues( String alias )
+	private void initializeAttrValues( String alias, int guidNum )
 	{	
 		GuidEntry guidEntry = GuidUtils.getGUIDKeys(alias);
+		SearchAndUpdateDriver.guidEntryArray[guidNum] = guidEntry;
+		
 		
 		JSONObject attrValJSON = new JSONObject();
 		for(int i=0; i<SearchAndUpdateDriver.numAttrs; i++)

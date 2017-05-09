@@ -11,7 +11,6 @@ import org.json.JSONObject;
 
 import edu.umass.cs.gnsclient.client.GNSCommand;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
-import edu.umass.cs.gnsclient.client.util.GuidUtils;
 import edu.umass.cs.gnscommon.exceptions.client.ClientException;
 import edu.umass.cs.gnscommon.packets.CommandPacket;
 
@@ -246,10 +245,17 @@ public class BothSearchAndUpdate extends
 	
 	private void sendUpdateMessage( int currUserGuidNum, long reqIdNum )
 	{
-		String alias = SearchAndUpdateDriver.ALIAS_PREFIX+SearchAndUpdateDriver.myID
-				+currUserGuidNum+SearchAndUpdateDriver.ALIAS_SUFFIX;
+//		String alias = SearchAndUpdateDriver.ALIAS_PREFIX+SearchAndUpdateDriver.myID
+//				+currUserGuidNum+SearchAndUpdateDriver.ALIAS_SUFFIX;
+//		
+//		GuidEntry guidEntry = GuidUtils.getGUIDKeys(alias);
 		
-		GuidEntry guidEntry = GuidUtils.getGUIDKeys(alias);
+		GuidEntry guidEntry = SearchAndUpdateDriver.guidEntryArray[currUserGuidNum];
+		
+		if(guidEntry == null)
+		{
+			System.out.println(" guidEntry is null");
+		}
 		
 		int randomAttrNum = updateRand.nextInt(SearchAndUpdateDriver.numAttrs);
 		double randVal = SearchAndUpdateDriver.ATTR_MIN 
@@ -291,10 +297,15 @@ public class BothSearchAndUpdate extends
 	
 	private void sendGetMessage( int currUserGuidNum, long reqIdNum )
 	{
-		String alias = SearchAndUpdateDriver.ALIAS_PREFIX+SearchAndUpdateDriver.myID
-				+currUserGuidNum+SearchAndUpdateDriver.ALIAS_SUFFIX;
+//		String alias = SearchAndUpdateDriver.ALIAS_PREFIX+SearchAndUpdateDriver.myID
+//				+currUserGuidNum+SearchAndUpdateDriver.ALIAS_SUFFIX;
 		
-		GuidEntry guidEntry = GuidUtils.getGUIDKeys(alias);
+		GuidEntry guidEntry = SearchAndUpdateDriver.guidEntryArray[currUserGuidNum];
+		
+		if(guidEntry == null)
+		{
+			System.out.println(" guidEntry is null");
+		}
 		
 //		try 
 //		{
