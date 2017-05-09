@@ -85,7 +85,7 @@ public class SearchAndUpdateDriver
 		gnsClient = gnsClient.setForcedTimeout(5000);
 		gnsClient = gnsClient.setNumRetriesUponTimeout(5);
 		
-		taskES = Executors.newFixedThreadPool(1);
+		taskES = Executors.newFixedThreadPool(20);
 		
 		if( userInitEnable )
 		{

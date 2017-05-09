@@ -13,6 +13,7 @@ import edu.umass.cs.gnsclient.client.GNSCommand;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
 import edu.umass.cs.gnsclient.client.util.GuidUtils;
 import edu.umass.cs.gnscommon.exceptions.client.ClientException;
+import edu.umass.cs.gnscommon.packets.CommandPacket;
 
 public class BothSearchAndUpdate extends 
 					AbstractRequestSendingClass implements Runnable
@@ -201,14 +202,17 @@ public class BothSearchAndUpdate extends
 			}
 		}
 		
-		try 
-		{
-			SearchAndUpdateDriver.gnsClient.execute
-				(GNSCommand.selectQuery(searchQuery), new SearchCallBack(this));
-		} catch (ClientException | IOException e) 
-		{
+		GNSRequest gnsReq;
+		try {
+			gnsReq = new GNSRequest(GNSCommand.selectQuery(searchQuery), 
+					this, GNSRequest.SEARCH_REQ);
+			SearchAndUpdateDriver.taskES.execute(gnsReq);
+		} catch (ClientException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+			//SearchAndUpdateDriver.gnsClient.execute
+			//	(GNSCommand.selectQuery(searchQuery), new SearchCallBack(this));
 	}
 	
 	
@@ -258,13 +262,23 @@ public class BothSearchAndUpdate extends
 			e.printStackTrace();
 		}
 		
-		try 
-		{
-			SearchAndUpdateDriver.gnsClient.execute
-					(GNSCommand.update(guidEntry, attrValJSON), new UpdateCallBack(this));
-		} 
-		catch (ClientException | IOException e) 
-		{
+//		try 
+//		{
+//			SearchAndUpdateDriver.gnsClient.execute
+//					(GNSCommand.update(guidEntry, attrValJSON), new UpdateCallBack(this));
+//		} 
+//		catch (ClientException | IOException e) 
+//		{
+//			e.printStackTrace();
+//		}
+		
+		GNSRequest gnsReq;
+		try {
+			gnsReq = new GNSRequest(GNSCommand.update(guidEntry, attrValJSON), 
+					this, GNSRequest.UPDATE_REQ);
+			SearchAndUpdateDriver.taskES.execute(gnsReq);
+		} catch (ClientException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -277,12 +291,23 @@ public class BothSearchAndUpdate extends
 		
 		GuidEntry guidEntry = GuidUtils.getGUIDKeys(alias);
 		
+//		try 
+//		{
+//			SearchAndUpdateDriver.gnsClient.execute
+//					(GNSCommand.read(guidEntry), new GetCallBack(this));
+//		} 
+//		catch (ClientException | IOException e) 
+//		{
+//			e.printStackTrace();
+//		}
+		
+		GNSRequest gnsReq;
 		try 
 		{
-			SearchAndUpdateDriver.gnsClient.execute
-					(GNSCommand.read(guidEntry), new GetCallBack(this));
-		} 
-		catch (ClientException | IOException e) 
+			gnsReq = new GNSRequest(GNSCommand.read(guidEntry), 
+					this, GNSRequest.GET_REQ);
+			SearchAndUpdateDriver.taskES.execute(gnsReq);
+		} catch (ClientException e) 
 		{
 			e.printStackTrace();
 		}
@@ -387,6 +412,69 @@ public class BothSearchAndUpdate extends
 			if( checkForCompletionWithLossTolerance(numSent, numRecvd) )
 			{
 				waitLock.notify();
+			}
+		}
+	}
+	
+	private class GNSRequest implements Runnable 
+	{
+		public static final int UPDATE_REQ	= 1;
+		public static final int SEARCH_REQ	= 2;
+		public static final int GET_REQ		= 3;
+		
+		private final CommandPacket cmd;
+		private final BothSearchAndUpdate thisObj;
+		private final int requestType;
+		
+		public GNSRequest(CommandPacket cmd, BothSearchAndUpdate thisObj, 
+									int requestType)
+		{
+			this.cmd = cmd;
+			this.thisObj = thisObj;
+			this.requestType = requestType;
+		}
+		
+		@Override
+		public void run() 
+		{
+			switch(requestType)
+			{
+				case UPDATE_REQ:
+				{
+					try 
+					{
+						SearchAndUpdateDriver.gnsClient.execute(cmd, new UpdateCallBack(thisObj));
+					} 
+					catch (IOException e) 
+					{
+						e.printStackTrace();
+					}
+					break;
+				}
+				case SEARCH_REQ:
+				{
+					try 
+					{
+						SearchAndUpdateDriver.gnsClient.execute(cmd, new SearchCallBack(thisObj));
+					} 
+					catch (IOException e) 
+					{
+						e.printStackTrace();
+					}
+					break;
+				}
+				case GET_REQ:
+				{
+					try 
+					{
+						SearchAndUpdateDriver.gnsClient.execute(cmd, new GetCallBack(thisObj));
+					} 
+					catch (IOException e) 
+					{
+						e.printStackTrace();
+					}
+					break;
+				}
 			}
 		}
 	}
