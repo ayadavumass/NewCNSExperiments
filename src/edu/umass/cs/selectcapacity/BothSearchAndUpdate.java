@@ -208,7 +208,8 @@ public class BothSearchAndUpdate extends
 			// querying 10 % of domain
 			double predLength 
 					= (SearchAndUpdateDriver.predicateLength
-					*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN)) ;
+							*(SearchAndUpdateDriver.ATTR_MAX 
+									- SearchAndUpdateDriver.ATTR_MIN)) ;
 			
 			double attrMax = attrMin + predLength;
 			
@@ -217,8 +218,8 @@ public class BothSearchAndUpdate extends
 				attrMax = SearchAndUpdateDriver.ATTR_MAX;
 			}
 			
-			attrMin = SearchAndUpdateDriver.ATTR_MIN;
-			attrMax = SearchAndUpdateDriver.ATTR_MAX;
+//			attrMin = SearchAndUpdateDriver.ATTR_MIN;
+//			attrMax = SearchAndUpdateDriver.ATTR_MAX;
 			
 			sumPredLength = sumPredLength + 
 				((attrMax-attrMin)/(SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN));

@@ -9,7 +9,10 @@ import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 
 import edu.umass.cs.gnsclient.client.GNSClient;
+import edu.umass.cs.gnsclient.client.GNSCommand;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
+import edu.umass.cs.gnsclient.client.util.GuidUtils;
+import edu.umass.cs.gnscommon.packets.CommandPacket;
 
 /**
  * This is the driver class to perform the GNS based CNS select and update
@@ -104,7 +107,7 @@ public class SearchAndUpdateDriver
 		
 		System.out.println("myID "+myID+" search and update and get client started getEnabled "
 				+getEnabled+" directMongoEnable "+directMongoEnable);
-		if(!directMongoEnable)
+		if( !directMongoEnable )
 		{
 			guidEntryArray    = new GuidEntry[(int)numUsers];
 			//guidPrefix = guidPrefix+myID;
@@ -113,7 +116,7 @@ public class SearchAndUpdateDriver
 			gnsClient = gnsClient.setForcedTimeout(5000);
 			gnsClient = gnsClient.setNumRetriesUponTimeout(5);
 		}
-		else 
+		else
 		{
 			mongoclient = new MongoClient("localhost", 27017);
 			gnsDB = mongoclient.getDB(DB_NAME);
@@ -129,6 +132,27 @@ public class SearchAndUpdateDriver
 			new UserInitializationClass(false).initializaRateControlledRequestSender();
 			long end 	= System.currentTimeMillis();
 			System.out.println(numUsers+" initialization guid creation complete "+(end-start));
+			
+			if(numUsers > 0)
+			{
+				String alias = SearchAndUpdateDriver.ALIAS_PREFIX+
+					SearchAndUpdateDriver.myID+0+
+					SearchAndUpdateDriver.ALIAS_SUFFIX;
+				
+				GuidEntry guidEntry = GuidUtils.getGUIDKeys(alias);
+				
+				for(int i=0; i<numAttrs; i++)
+				{
+					String attrName = SearchAndUpdateDriver.ATTR_PREFIX+i;
+					
+					// 1 is for indexing in increasing order.
+					CommandPacket resp = gnsClient.execute(GNSCommand.fieldCreateIndex(guidEntry, 
+							attrName, 1+""));
+					
+					System.out.println("Indexing "+attrName+" attribute GNS resp "
+							+ resp);
+				}
+			}
 			
 			
 			start 	= System.currentTimeMillis();
