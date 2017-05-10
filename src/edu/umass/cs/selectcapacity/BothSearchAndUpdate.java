@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -171,7 +172,9 @@ public class BothSearchAndUpdate extends
 			GNSRequest gnsReq;
 			try 
 			{
-				gnsReq = new GNSRequest(GNSCommand.selectQuery(searchQuery), 
+				List<String> projection = new LinkedList<String>();
+				projection.add(SearchAndUpdateDriver.ATTR_PREFIX+"0");
+				gnsReq = new GNSRequest(GNSCommand.selectRecords(searchQuery, projection), 
 					this, GNSRequest.SEARCH_REQ);
 				SearchAndUpdateDriver.taskES.execute(gnsReq);
 			} 
