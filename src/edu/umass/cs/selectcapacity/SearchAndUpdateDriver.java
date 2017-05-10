@@ -42,8 +42,9 @@ public class SearchAndUpdateDriver
 	
 	public static final String DB_NAME							= "UMASS_GNS_DB_GNSApp1_0";
 	public static final String COLLECTION_NAME					= "NameRecord";
+	public static final String OUTER_JSON						= "nr_valuesMap";
 	
-	
+		
 	// 100 seconds, experiment runs for 100 seconds
 	public static 	 long experimentTime						= 100000;
 	

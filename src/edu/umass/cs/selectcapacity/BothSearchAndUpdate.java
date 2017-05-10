@@ -290,7 +290,7 @@ public class BothSearchAndUpdate extends
 			
 			BasicDBObject range = new BasicDBObject("$gt", attrMin).append("$lt", attrMax);
 			//String predicate;
-			predicate.put(attrName, range);
+			predicate.put(SearchAndUpdateDriver.OUTER_JSON+"."+attrName, range);
 			obj.add(predicate);
 		}
 		andQuery.put("$and", obj);
