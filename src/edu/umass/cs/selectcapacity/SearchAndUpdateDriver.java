@@ -4,6 +4,7 @@ package edu.umass.cs.selectcapacity;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
@@ -85,7 +86,8 @@ public class SearchAndUpdateDriver
 
 	public static DB gnsDB;
 	public static DBCollection collection;
-
+	
+	public static boolean indexingEnable						= false;
 	
 	@SuppressWarnings("deprecation")
 	public static void main( String[] args ) throws Exception
@@ -104,6 +106,12 @@ public class SearchAndUpdateDriver
 		{
 			directMongoEnable = Boolean.parseBoolean(args[10]);
 		}
+		
+		if(args.length > 11)
+		{
+			indexingEnable = Boolean.parseBoolean(args[11]);
+		}
+		
 		
 		System.out.println("myID "+myID+" search and update and get client started getEnabled "
 				+getEnabled+" directMongoEnable "+directMongoEnable);
@@ -133,7 +141,7 @@ public class SearchAndUpdateDriver
 			long end 	= System.currentTimeMillis();
 			System.out.println(numUsers+" initialization guid creation complete "+(end-start));
 			
-			if(numUsers > 0)
+			if(indexingEnable)
 			{
 				String alias = SearchAndUpdateDriver.ALIAS_PREFIX+
 					SearchAndUpdateDriver.myID+0+
@@ -160,6 +168,25 @@ public class SearchAndUpdateDriver
 			new UserInitializationClass(true).initializaRateControlledRequestSender();
 			end 	= System.currentTimeMillis();
 			System.out.println(numUsers+" initialization value update complete "+(end-start));
+		}
+		
+		if(directMongoEnable)
+		{
+			if(indexingEnable)
+			{
+				for(int i=0; i<numAttrs; i++)
+				{
+					String attrName = SearchAndUpdateDriver.ATTR_PREFIX+i;
+					
+					// 1 is for indexing in increasing order.
+					BasicDBObject index = new BasicDBObject(
+								OUTER_JSON+"."+attrName, 1);
+					collection.createIndex(index);
+					
+					System.out.println("Mongo indexing "+attrName+" attribute");
+				}
+			}
+			
 		}
 		
 		BothSearchAndUpdate bothSearchAndUpdate = new BothSearchAndUpdate();
