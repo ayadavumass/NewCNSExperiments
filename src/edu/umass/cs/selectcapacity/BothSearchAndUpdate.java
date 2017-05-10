@@ -51,7 +51,6 @@ public class BothSearchAndUpdate extends
 	private long numClientExec				= 0;
 	private final Object lock 				= new Object();
 	
-	
 	public BothSearchAndUpdate()
 	{
 		super( SearchAndUpdateDriver.UPD_LOSS_TOLERANCE );
@@ -218,8 +217,8 @@ public class BothSearchAndUpdate extends
 				attrMax = SearchAndUpdateDriver.ATTR_MAX;
 			}
 			
-			//attrMin = SearchAndUpdateDriver.ATTR_MIN;
-			//attrMax = SearchAndUpdateDriver.ATTR_MAX;
+			attrMin = SearchAndUpdateDriver.ATTR_MIN;
+			attrMax = SearchAndUpdateDriver.ATTR_MAX;
 			
 			sumPredLength = sumPredLength + 
 				((attrMax-attrMin)/(SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN));
