@@ -101,25 +101,27 @@ public class SearchAndUpdateDriver
 			directMongoEnable = Boolean.parseBoolean(args[10]);
 		}
 		
-		guidEntryArray    = new GuidEntry[(int)numUsers];
-		
 		System.out.println("myID "+myID+" search and update and get client started getEnabled "
-									+getEnabled+" directMongoEnable "+directMongoEnable);
-		
-		//guidPrefix = guidPrefix+myID;
-		
-		gnsClient  = new GNSClient();
-		gnsClient = gnsClient.setForcedTimeout(5000);
-		gnsClient = gnsClient.setNumRetriesUponTimeout(5);
-		
-		mongoclient = new MongoClient("localhost", 27017);
-		gnsDB = mongoclient.getDB(DB_NAME);
-		collection = gnsDB.getCollection(COLLECTION_NAME);
-		
+				+getEnabled+" directMongoEnable "+directMongoEnable);
+		if(!directMongoEnable)
+		{
+			guidEntryArray    = new GuidEntry[(int)numUsers];
+			//guidPrefix = guidPrefix+myID;
+			
+			gnsClient  = new GNSClient();
+			gnsClient = gnsClient.setForcedTimeout(5000);
+			gnsClient = gnsClient.setNumRetriesUponTimeout(5);
+		}
+		else 
+		{
+			mongoclient = new MongoClient("localhost", 27017);
+			gnsDB = mongoclient.getDB(DB_NAME);
+			collection = gnsDB.getCollection(COLLECTION_NAME);
+		}
 		
 		taskES = Executors.newFixedThreadPool(20);
 		
-		if( userInitEnable )
+		if( userInitEnable && !directMongoEnable)
 		{
 			long start 	= System.currentTimeMillis();
 			// just guid creation
