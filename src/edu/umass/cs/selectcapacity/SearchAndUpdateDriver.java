@@ -120,7 +120,7 @@ public class SearchAndUpdateDriver
 			collection = gnsDB.getCollection(COLLECTION_NAME);
 		}
 		
-		taskES = Executors.newFixedThreadPool(20);
+		taskES = Executors.newFixedThreadPool(100);
 		
 		if( userInitEnable && !directMongoEnable)
 		{
