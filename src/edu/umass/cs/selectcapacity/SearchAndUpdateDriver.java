@@ -4,6 +4,10 @@ package edu.umass.cs.selectcapacity;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.MongoClient;
+
 import edu.umass.cs.gnsclient.client.GNSClient;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
 
@@ -36,6 +40,10 @@ public class SearchAndUpdateDriver
 	public static String ALIAS_PREFIX							= "UserGUID";
 	public static final String ALIAS_SUFFIX						= "@gmail.com";
 	
+	public static final String DB_NAME							= "UMASS_GNS_DB_GNSApp1_0";
+	public static final String COLLECTION_NAME					= "NameRecord";
+	
+	
 	// 100 seconds, experiment runs for 100 seconds
 	public static 	 long experimentTime						= 100000;
 	
@@ -67,7 +75,15 @@ public class SearchAndUpdateDriver
 	
 	public static GuidEntry[] guidEntryArray;
 	
+	public static MongoClient mongoclient;
 	
+	public static boolean directMongoEnable						= false;
+
+	public static DB gnsDB;
+	public static DBCollection collection;
+
+	
+	@SuppressWarnings("deprecation")
 	public static void main( String[] args ) throws Exception
 	{
 		myID 			  = Integer.parseInt(args[0]);
@@ -80,17 +96,26 @@ public class SearchAndUpdateDriver
 		numAttrsInQuery   = Integer.parseInt(args[7]);
 		predicateLength   = Double.parseDouble(args[8]);
 		getEnabled		  = Boolean.parseBoolean(args[9]);
+		if(args.length > 10)
+		{
+			directMongoEnable = Boolean.parseBoolean(args[10]);
+		}
 		
 		guidEntryArray    = new GuidEntry[(int)numUsers];
 		
 		System.out.println("myID "+myID+" search and update and get client started getEnabled "
-									+getEnabled);
+									+getEnabled+" directMongoEnable "+directMongoEnable);
 		
 		//guidPrefix = guidPrefix+myID;
 		
 		gnsClient  = new GNSClient();
 		gnsClient = gnsClient.setForcedTimeout(5000);
 		gnsClient = gnsClient.setNumRetriesUponTimeout(5);
+		
+		mongoclient = new MongoClient("localhost", 27017);
+		gnsDB = mongoclient.getDB(DB_NAME);
+		collection = gnsDB.getCollection(COLLECTION_NAME);
+		
 		
 		taskES = Executors.newFixedThreadPool(1);
 		

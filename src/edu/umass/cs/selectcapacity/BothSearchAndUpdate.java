@@ -1,13 +1,19 @@
 package edu.umass.cs.selectcapacity;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
 import edu.umass.cs.gnsclient.client.GNSCommand;
 import edu.umass.cs.gnsclient.client.util.GuidEntry;
@@ -155,13 +161,40 @@ public class BothSearchAndUpdate extends
 		sendGetMessage((int)currUserGuidNum, reqIdNum);
 	}
 	
+	
 	private void sendQueryMessageWithSmallRanges(long reqIdNum)
 	{
 		//String query = "$and:[(\"~a0\":($gt:0, $lt:100)),(\"~a1\":($gt:0, $lt:100))]";
 		
+		if(!SearchAndUpdateDriver.directMongoEnable)
+		{
+			String searchQuery = getSearchQueryString();	
+			GNSRequest gnsReq;
+			try 
+			{
+				gnsReq = new GNSRequest(GNSCommand.selectQuery(searchQuery), 
+					this, GNSRequest.SEARCH_REQ);
+				SearchAndUpdateDriver.taskES.execute(gnsReq);
+			} 
+			catch (ClientException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+		else
+		{
+			DBObject queryObj = getSearchQueryDBObject();
+			MongoRequest mongoReq = new MongoRequest(queryObj, this, MongoRequest.SEARCH_REQ);
+			SearchAndUpdateDriver.taskES.execute(mongoReq);
+		}
+	}
+	
+	
+	private String getSearchQueryString()
+	{
 		HashMap<String, Boolean> distinctAttrMap 
-			= pickDistinctAttrs( SearchAndUpdateDriver.numAttrsInQuery, 
-					SearchAndUpdateDriver.numAttrs, searchQueryRand );
+				= pickDistinctAttrs( SearchAndUpdateDriver.numAttrsInQuery, 
+							SearchAndUpdateDriver.numAttrs, searchQueryRand );
 		
 		Iterator<String> attrIter = distinctAttrMap.keySet().iterator();
 		
@@ -170,13 +203,13 @@ public class BothSearchAndUpdate extends
 		{
 			String attrName = attrIter.next();
 			double attrMin = SearchAndUpdateDriver.ATTR_MIN
-					+searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX 
-									- SearchAndUpdateDriver.ATTR_MIN);
+				+searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX 
+								- SearchAndUpdateDriver.ATTR_MIN);
 			
 			// querying 10 % of domain
 			double predLength 
-				= (SearchAndUpdateDriver.predicateLength
-						*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN)) ;
+					= (SearchAndUpdateDriver.predicateLength
+					*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN)) ;
 			
 			double attrMax = attrMin + predLength;
 			
@@ -189,9 +222,9 @@ public class BothSearchAndUpdate extends
 			//attrMax = SearchAndUpdateDriver.ATTR_MAX;
 			
 			sumPredLength = sumPredLength + 
-					((attrMax-attrMin)/(SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN));
-			this.numEntries = this.numEntries + 1;
+				((attrMax-attrMin)/(SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN));
 			
+			this.numEntries = this.numEntries + 1;
 			
 			String predicate = "(\"~"+attrName+"\":($gt:"+attrMin+", $lt:"+attrMax+"))";
 			
@@ -206,17 +239,62 @@ public class BothSearchAndUpdate extends
 			}
 		}
 		
-		GNSRequest gnsReq;
-		try {
-			gnsReq = new GNSRequest(GNSCommand.selectQuery(searchQuery), 
-					this, GNSRequest.SEARCH_REQ);
-			SearchAndUpdateDriver.taskES.execute(gnsReq);
-		} catch (ClientException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		return searchQuery;
+	}
+	
+	
+	private DBObject getSearchQueryDBObject()
+	{
+		BasicDBObject andQuery = new BasicDBObject();
+		List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+		
+		
+		HashMap<String, Boolean> distinctAttrMap 
+				= pickDistinctAttrs( SearchAndUpdateDriver.numAttrsInQuery, 
+							SearchAndUpdateDriver.numAttrs, searchQueryRand );
+		
+		Iterator<String> attrIter = distinctAttrMap.keySet().iterator();
+		
+		//String searchQuery = "$and:[";
+		while( attrIter.hasNext() )
+		{
+			String attrName = attrIter.next();
+			double attrMin = SearchAndUpdateDriver.ATTR_MIN
+				+searchQueryRand.nextDouble()*(SearchAndUpdateDriver.ATTR_MAX 
+								- SearchAndUpdateDriver.ATTR_MIN);
+			
+			// querying 10 % of domain
+			double predLength 
+					= (SearchAndUpdateDriver.predicateLength
+					*(SearchAndUpdateDriver.ATTR_MAX - SearchAndUpdateDriver.ATTR_MIN)) ;
+			
+			double attrMax = attrMin + predLength;
+			
+			if( attrMax > SearchAndUpdateDriver.ATTR_MAX )
+			{
+				attrMax = SearchAndUpdateDriver.ATTR_MAX;
+			}
+			
+			//attrMin = SearchAndUpdateDriver.ATTR_MIN;
+			//attrMax = SearchAndUpdateDriver.ATTR_MAX;
+			
+			sumPredLength = sumPredLength + 
+				((attrMax-attrMin)/(SearchAndUpdateDriver.ATTR_MAX-SearchAndUpdateDriver.ATTR_MIN));
+			
+			this.numEntries = this.numEntries + 1;
+			
+			//BasicDBObject gtQuery = new BasicDBObject();
+			//gtQuery.put("number", new BasicDBObject("$gt", 2).append("$lt", 5));
+			
+			BasicDBObject predicate = new BasicDBObject();
+			
+			BasicDBObject range = new BasicDBObject("$gt", attrMin).append("$lt", attrMax);
+			//String predicate;
+			predicate.put(attrName, range);
+			obj.add(predicate);
 		}
-			//SearchAndUpdateDriver.gnsClient.execute
-			//	(GNSCommand.selectQuery(searchQuery), new SearchCallBack(this));
+		andQuery.put("$and", obj);
+		return andQuery;
 	}
 	
 	
@@ -504,6 +582,65 @@ public class BothSearchAndUpdate extends
 					{
 						e.printStackTrace();
 					}
+					break;
+				}
+			}
+			
+			synchronized(lock)
+			{
+				sumClientExecTime = sumClientExecTime + (end-start);
+				numClientExec++;
+			}
+		}
+	}
+	
+	
+	private class MongoRequest implements Runnable 
+	{
+		public static final int UPDATE_REQ	= 1;
+		public static final int SEARCH_REQ	= 2;
+		public static final int GET_REQ		= 3;
+		
+		private final DBObject cmd;
+		private final BothSearchAndUpdate thisObj;
+		private final int requestType;
+		
+		public MongoRequest(DBObject cmd, BothSearchAndUpdate thisObj, 
+									int requestType)
+		{
+			this.cmd = cmd;
+			this.thisObj = thisObj;
+			this.requestType = requestType;
+		}
+		
+		@Override
+		public void run() 
+		{
+			long start = 0;
+			long end = 0;
+			switch(requestType)
+			{
+				case UPDATE_REQ:
+				{
+					break;
+				}
+				case SEARCH_REQ:
+				{
+					start = System.currentTimeMillis();
+						
+					DBCursor cursor = SearchAndUpdateDriver.collection.find(cmd);
+					int resultSize = 0;
+					while (cursor.hasNext()) 
+					{
+						resultSize++;
+						cursor.next();
+					}
+					end = System.currentTimeMillis();
+					thisObj.incrementSearchNumRecvd(resultSize, (end-start));
+					break;
+				}
+				case GET_REQ:
+				{
 					break;
 				}
 			}

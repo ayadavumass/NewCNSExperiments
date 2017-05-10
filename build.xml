@@ -12,7 +12,7 @@
 
   <!-- Classpath definitions -->
   <path id="classpath.base">
-    <fileset dir="${lib.dir}" includes="gnsclient-1.19.13.jar" />
+    <fileset dir="${lib.dir}" includes="gnsclient-1.19.13.jar, mongo-java-driver-3.0.0.jar" />
   </path>
 
   <!-- Init -->
@@ -45,7 +45,7 @@
 <jar jarfile="${release.dir}/ExperimentClient.jar">
   <fileset dir="${build.dir}/">
   </fileset>
-  <zipgroupfileset dir="${lib.dir}/" includes="gnsclient-1.19.13.jar"/>
+  <zipgroupfileset dir="${lib.dir}/" includes="gnsclient-1.19.13.jar, mongo-java-driver-3.0.0.jar"/>
   <manifest>
     <attribute name="Built-By" value="Aditya Yadav" />
     <!-- Information about the program itself -->
