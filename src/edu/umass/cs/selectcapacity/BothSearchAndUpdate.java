@@ -380,7 +380,7 @@ public class BothSearchAndUpdate extends
 								this, GNSRequest.GET_REQ);
 			
 			SearchAndUpdateDriver.taskES.execute(gnsReq);
-		} 
+		}
 		catch (ClientException e) 
 		{
 			e.printStackTrace();
@@ -482,7 +482,7 @@ public class BothSearchAndUpdate extends
 			
 			if((numRecvd % 10000) == 0)
 			{
-				System.out.println("Get recvd current stats total sent="+numSent
+				System.out.println("UnSignedGet recvd current stats total sent="+numSent
 						+" total recvd="+numRecvd
 						+" update recvd="+this.numUpdatesRecvd
 						+" search recvd="+this.numSearchesRecvd
