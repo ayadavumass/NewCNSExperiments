@@ -114,7 +114,7 @@ public class SearchAndUpdateDriver
 		
 		
 		System.out.println("myID "+myID+" search and update and get client started getEnabled "
-				+getEnabled+" directMongoEnable "+directMongoEnable);
+				+getEnabled+" directMongoEnable "+directMongoEnable+" indexingEnable "+indexingEnable);
 		if( !directMongoEnable )
 		{
 			guidEntryArray    = new GuidEntry[(int)numUsers];
@@ -131,7 +131,7 @@ public class SearchAndUpdateDriver
 			collection = gnsDB.getCollection(COLLECTION_NAME);
 		}
 		
-		taskES = Executors.newFixedThreadPool(100);
+		taskES = Executors.newFixedThreadPool(20);
 		
 		if( userInitEnable && !directMongoEnable)
 		{
