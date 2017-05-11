@@ -324,13 +324,9 @@ public class BothSearchAndUpdate extends
 		return hashMap;
 	}
 	
+	
 	private void sendUpdateMessage( int currUserGuidNum, long reqIdNum )
-	{
-//		String alias = SearchAndUpdateDriver.ALIAS_PREFIX+SearchAndUpdateDriver.myID
-//				+currUserGuidNum+SearchAndUpdateDriver.ALIAS_SUFFIX;
-//		
-//		GuidEntry guidEntry = GuidUtils.getGUIDKeys(alias);
-		
+	{	
 		GuidEntry guidEntry = SearchAndUpdateDriver.guidEntryArray[currUserGuidNum];
 		
 		if(guidEntry == null)
@@ -354,23 +350,15 @@ public class BothSearchAndUpdate extends
 			e.printStackTrace();
 		}
 		
-//		try 
-//		{
-//			SearchAndUpdateDriver.gnsClient.execute
-//					(GNSCommand.update(guidEntry, attrValJSON), new UpdateCallBack(this));
-//		} 
-//		catch (ClientException | IOException e) 
-//		{
-//			e.printStackTrace();
-//		}
-		
 		GNSRequest gnsReq;
-		try {
+		try 
+		{
 			gnsReq = new GNSRequest(GNSCommand.update(guidEntry, attrValJSON), 
 					this, GNSRequest.UPDATE_REQ);
 			SearchAndUpdateDriver.taskES.execute(gnsReq);
-		} catch (ClientException e) {
-			// TODO Auto-generated catch block
+		} 
+		catch (ClientException e) 
+		{
 			e.printStackTrace();
 		}
 	}
@@ -378,9 +366,6 @@ public class BothSearchAndUpdate extends
 	
 	private void sendGetMessage( int currUserGuidNum, long reqIdNum )
 	{
-//		String alias = SearchAndUpdateDriver.ALIAS_PREFIX+SearchAndUpdateDriver.myID
-//				+currUserGuidNum+SearchAndUpdateDriver.ALIAS_SUFFIX;
-		
 		GuidEntry guidEntry = SearchAndUpdateDriver.guidEntryArray[currUserGuidNum];
 		
 		if(guidEntry == null)
@@ -388,23 +373,15 @@ public class BothSearchAndUpdate extends
 			System.out.println(" guidEntry is null");
 		}
 		
-//		try 
-//		{
-//			SearchAndUpdateDriver.gnsClient.execute
-//					(GNSCommand.read(guidEntry), new GetCallBack(this));
-//		} 
-//		catch (ClientException | IOException e) 
-//		{
-//			e.printStackTrace();
-//		}
-		
 		GNSRequest gnsReq;
-		try 
+		try
 		{
-			gnsReq = new GNSRequest(GNSCommand.read(guidEntry), 
-					this, GNSRequest.GET_REQ);
+			gnsReq = new GNSRequest(GNSCommand.read(guidEntry.getGuid(), null), 
+								this, GNSRequest.GET_REQ);
+			
 			SearchAndUpdateDriver.taskES.execute(gnsReq);
-		} catch (ClientException e) 
+		} 
+		catch (ClientException e) 
 		{
 			e.printStackTrace();
 		}
@@ -520,6 +497,7 @@ public class BothSearchAndUpdate extends
 		}
 	}
 	
+	
 	private class GNSRequest implements Runnable 
 	{
 		public static final int UPDATE_REQ	= 1;
@@ -575,7 +553,7 @@ public class BothSearchAndUpdate extends
 				}
 				case GET_REQ:
 				{
-					try 
+					try
 					{
 						start = System.currentTimeMillis();
 						SearchAndUpdateDriver.gnsClient.execute(cmd, new GetCallBack(thisObj));
