@@ -485,7 +485,7 @@ public class BothSearchAndUpdate extends
 			
 			if((numRecvd % 10000) == 0)
 			{
-				System.out.println("UnSignedGet recvd current stats total sent="+numSent
+				System.out.println("SignedGet recvd current stats total sent="+numSent
 						+" total recvd="+numRecvd
 						+" update recvd="+this.numUpdatesRecvd
 						+" search recvd="+this.numSearchesRecvd
