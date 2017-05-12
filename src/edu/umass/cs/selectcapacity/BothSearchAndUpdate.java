@@ -376,8 +376,11 @@ public class BothSearchAndUpdate extends
 		GNSRequest gnsReq;
 		try
 		{
-			gnsReq = new GNSRequest(GNSCommand.read(guidEntry.getGuid(), null), 
-								this, GNSRequest.GET_REQ);
+			gnsReq = new GNSRequest(GNSCommand.read(guidEntry), 
+					this, GNSRequest.GET_REQ);
+			
+//			gnsReq = new GNSRequest(GNSCommand.read(guidEntry.getGuid(), null), 
+//								this, GNSRequest.GET_REQ);
 			
 			SearchAndUpdateDriver.taskES.execute(gnsReq);
 		}
