@@ -23,7 +23,7 @@ import edu.umass.cs.gnscommon.packets.CommandPacket;
  *
  */
 public class SearchAndUpdateDriver
-{	
+{
 	// 1% loss tolerance
 	public static final double INSERT_LOSS_TOLERANCE			= 0.0;
 	

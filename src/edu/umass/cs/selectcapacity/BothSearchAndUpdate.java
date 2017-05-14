@@ -173,7 +173,6 @@ public class BothSearchAndUpdate extends
 			try 
 			{
 				List<String> projection = new LinkedList<String>();
-				projection.add(SearchAndUpdateDriver.ATTR_PREFIX+"0");
 				gnsReq = new GNSRequest(GNSCommand.selectRecords(searchQuery, projection), 
 					this, GNSRequest.SEARCH_REQ);
 				SearchAndUpdateDriver.taskES.execute(gnsReq);

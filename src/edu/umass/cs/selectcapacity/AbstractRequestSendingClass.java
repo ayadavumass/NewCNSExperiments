@@ -120,4 +120,5 @@ public abstract class AbstractRequestSendingClass
 	public abstract void incrementUpdateNumRecvd(String userGUID, long timeTaken);
 	public abstract void incrementSearchNumRecvd(int resultSize, long timeTaken);
 	public abstract void incrementGetNumRecvd(JSONObject resultJSON, long timeTaken);
+	
 }
