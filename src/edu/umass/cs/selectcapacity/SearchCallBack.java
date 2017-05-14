@@ -26,7 +26,7 @@ public class SearchCallBack implements Callback<CommandPacket, CommandPacket>
 		CommandPacket cmd = (CommandPacket) request;
 		try
 		{
-			System.out.println("Response cmd "+cmd );
+			//System.out.println("Response cmd "+cmd );
 			sendingObj.incrementSearchNumRecvd(cmd.getResultList().size(), 
 					(System.currentTimeMillis()-startTime));
 		} catch (ClientException e) 
