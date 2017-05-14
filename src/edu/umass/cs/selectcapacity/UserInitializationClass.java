@@ -96,7 +96,7 @@ public class UserInitializationClass extends AbstractRequestSendingClass
 		double reqsps = SearchAndUpdateDriver.initRate;
 		
 		if(this.performValueUpdate)
-			reqsps = 30;
+			reqsps = 10;
 		
 		
 		long currTime = 0;
