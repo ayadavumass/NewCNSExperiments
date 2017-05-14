@@ -154,11 +154,17 @@ public class SearchAndUpdateDriver
 					String attrName = SearchAndUpdateDriver.ATTR_PREFIX+i;
 					
 					// 1 is for indexing in increasing order.
-					CommandPacket resp = gnsClient.execute(GNSCommand.fieldCreateIndex(guidEntry, 
+					try
+					{
+						CommandPacket resp = gnsClient.execute(GNSCommand.fieldCreateIndex(guidEntry, 
 							attrName, 1+""));
-					
-					System.out.println("Indexing "+attrName+" attribute GNS resp "
-							+ resp);
+						System.out.println("Indexing "+attrName+" attribute GNS resp "
+								+ resp);
+					}
+					catch(Exception ex)
+					{
+						ex.printStackTrace();
+					}
 				}
 			}
 			
