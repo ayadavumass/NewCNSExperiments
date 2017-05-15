@@ -456,7 +456,7 @@ public class BothSearchAndUpdate extends
 			sumResultSize = sumResultSize + resultSize;
 			this.sumSearchLatency = this.sumSearchLatency + timeTaken;
 			
-			if((numRecvd % 10) == 0)
+			if((numRecvd % 1000) == 0)
 			{
 				System.out.println("Search recvd current stats total sent="+numSent
 						+" total recvd="+numRecvd
@@ -472,7 +472,8 @@ public class BothSearchAndUpdate extends
 			}
 		}
 	}
-
+	
+	
 	@Override
 	public void incrementGetNumRecvd(JSONObject resultJSON, long timeTaken) 
 	{
@@ -576,7 +577,6 @@ public class BothSearchAndUpdate extends
 			}
 		}
 	}
-	
 	
 	private class MongoRequest implements Runnable 
 	{
