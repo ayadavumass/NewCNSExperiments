@@ -456,7 +456,7 @@ public class BothSearchAndUpdate extends
 			sumResultSize = sumResultSize + resultSize;
 			this.sumSearchLatency = this.sumSearchLatency + timeTaken;
 			
-			if((numRecvd % 10000) == 0)
+			if((numRecvd % 10) == 0)
 			{
 				System.out.println("Search recvd current stats total sent="+numSent
 						+" total recvd="+numRecvd
