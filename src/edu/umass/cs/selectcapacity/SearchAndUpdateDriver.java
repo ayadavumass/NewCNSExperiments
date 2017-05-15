@@ -141,7 +141,7 @@ public class SearchAndUpdateDriver
 			long end 	= System.currentTimeMillis();
 			System.out.println(numUsers+" initialization guid creation complete "+(end-start));
 			
-			Thread.sleep(10000);
+			Thread.sleep(5000);
 			
 			if(indexingEnable && (SearchAndUpdateDriver.myID == 0))
 			{
@@ -169,7 +169,7 @@ public class SearchAndUpdateDriver
 					}
 				}
 			}
-			Thread.sleep(10000);
+			Thread.sleep(5000);
 			
 			start 	= System.currentTimeMillis();
 			// just guid creation
@@ -196,6 +196,7 @@ public class SearchAndUpdateDriver
 			}
 		}
 		
+		Thread.sleep(5000);
 		BothSearchAndUpdate bothSearchAndUpdate = new BothSearchAndUpdate();
 		new Thread(bothSearchAndUpdate).start();
 		
