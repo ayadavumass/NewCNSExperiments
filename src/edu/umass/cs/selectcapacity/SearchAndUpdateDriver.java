@@ -141,7 +141,9 @@ public class SearchAndUpdateDriver
 			long end 	= System.currentTimeMillis();
 			System.out.println(numUsers+" initialization guid creation complete "+(end-start));
 			
-			if(indexingEnable)
+			Thread.sleep(10000);
+			
+			if(indexingEnable && (SearchAndUpdateDriver.myID == 0))
 			{
 				String alias = SearchAndUpdateDriver.ALIAS_PREFIX+
 					SearchAndUpdateDriver.myID+0+
@@ -192,7 +194,6 @@ public class SearchAndUpdateDriver
 					System.out.println("Mongo indexing "+attrName+" attribute");
 				}
 			}
-			
 		}
 		
 		BothSearchAndUpdate bothSearchAndUpdate = new BothSearchAndUpdate();
