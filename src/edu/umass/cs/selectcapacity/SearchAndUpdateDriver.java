@@ -167,7 +167,7 @@ public class SearchAndUpdateDriver
 					}
 				}
 			}
-			
+			Thread.sleep(10000);
 			
 			start 	= System.currentTimeMillis();
 			// just guid creation
